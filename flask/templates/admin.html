@@ -1,0 +1,43 @@
+{% extends 'includes/layout.html' %}
+
+{% block body %}
+{% from "includes/_formhelpers.html" import render_field %}
+<center>
+    <h1>RS232 hinzufügen</h1>
+    <hr/>
+    <form method="POST">
+        <div class="form-group" style="width: 75%;">{{render_field(form.string_input_name, class="form-control")}}</div>
+        <br/>
+        <div class="form-group" style="width: 75%;" >{{render_field(form.select_input_type, class="form-control")}}</div>
+        <br/>
+        <div class="form-group" style="width: 75%;" >{{render_field(form.string_input_command, class="form-control")}}</div>
+        <br>
+        <input type="submit" class="btn btn-outline-success btn-lg" value="hinzufügen" />
+    </form>
+
+    <br/>
+    <br/>
+    <hr/>
+    {% if "rs232" in json_data %}
+    <table class="table table-stripped">
+        <tr>
+            <th>Pos</th>
+            <th>Name</th>
+            <th>Command</th>
+            <th>Type</th>
+            <th>Löschen</th>
+        </tr>
+
+        {% for data in json_data["rs232"] %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ json_data["rs232"][data]["name"] }}</td>
+            <td>{{ json_data["rs232"][data]["command"] }}</td>
+            <td>{{ json_data["rs232"][data]["type"] }}</td>
+            <td><a href="#" class="btn btn-outline-danger btn-sm">DEL</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+</center>
+{% endblock %}

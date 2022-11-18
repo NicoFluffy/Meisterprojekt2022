@@ -1,0 +1,14 @@
+{
+    "rs232": {
+        "0": {
+            "name": "Mondopad Einschalten",
+            "command": "Mondopad_Ein",
+            "type": "Raw"
+        },
+        "1": {
+            "name": "Mondopad Ausschalten",
+            "command": "Mondopad Aus",
+            "type": "Raw"
+        }
+    }
+}

@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		
+		<title>Nicos Projekt</title>
+		<link rel="icon" type="image/x-icon" href="/static/favicon/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="/static/css/stylesheet.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+	</head>
+	<body>
+	{% include 'includes/_navbar.html' %}
+	{% include 'includes/_messages.html' %}
+	{% block body %}
+
+    {% endblock%}
+	</body>
+</html>

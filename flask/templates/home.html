@@ -1,0 +1,24 @@
+{% extends 'includes/layout.html' %}
+
+{% block body %}
+{% from "includes/_formhelpers.html" import render_field %}
+<center>
+    {% if "rs232" in json_data %}
+    <div>
+        {% for data in json_data["rs232"] %}
+            <h3>{{ json_data["rs232"][data]["name"] }}</h3>
+            <hr/>
+            <a href="/send_command/{{ data }}" class="btn btn-outline-success btn-lg">Senden</a>
+            <hr/>
+            <hr/>
+        {% endfor %}
+    </div>
+    {% else %}
+    <h1>Bislang sind noch keine Kommandos hinterlegt</h1>
+    <a href="/admin" class="btn btn-outline-info btn-lg">RS232 konfigurieren</a>
+
+    {% endif %}
+
+</center>
+
+{% endblock %}
