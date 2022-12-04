@@ -1,0 +1,13 @@
+{% extends "template.html" %}
+{% block title %}Mediensteuerung{% endblock %}
+{% block content %}
+<div class="grid">
+{% if buttons %}
+  {% for name, func, color in buttons %}
+    <button class="btn {% if color %}{{color}}{%else%}btn-primary {%endif%}" data-url="{{func}}">{{name}}</button>
+  {% endfor %}
+{% else %}
+  <h1>Hello, World!</h1>
+{% endif %}
+</div>
+{% endblock %}

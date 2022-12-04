@@ -1,0 +1,10 @@
+<!doctype html>
+<head>
+<title>{% block title %}{% endblock %} - Flaskr</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<script src="{{ url_for('static', filename='css/bootstrap.bundle.min.js') }}"></script>
+</head>
+<section class="content">
+  {% block content %}{% endblock %}
+</section>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
