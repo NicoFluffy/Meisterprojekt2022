@@ -1,7 +1,39 @@
 from flask import Flask, render_template
 import time
 import serial
+from flask_socketio import SocketIO
+
+# Erstelle Flask APP mit SocketIO
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'superSecret!'
+socketio = SocketIO(app)
+# Ist PC verbunden?
+pc = False
+# Befehl den der PC noch zu starten hat
+pcHasToDo = None
+
+if __name__ == '__main__':
+    socketio.run(app)
+
+
+@socketio.on('connect')
+def test_connect():
+    print('pc da')
+    global pc 
+    global pcHasToDo
+    pc = True
+    # Wenn der PC noch einen Befehl ausführen muss
+    if pcHasToDo != None:
+        #Rufe den Befehl auf
+        cmd_pc(pcHasToDo)
+        pcHasToDo = None
+
+
+@socketio.on('disconnect')
+def test_disconnect():
+    print('pc weg')
+    global pc
+    pc = False
 
 commandsmondo = {
   "poweron": "5b00100001",
@@ -49,7 +81,7 @@ def runCmds(cmds):
                 #printe die Rückmeldung
                 print(ser.read(64))
                 #schlafe 4 Sekunden
-                time.sleep(4)
+                time.sleep(0.5)
         #schließe die Serielle Schnittstelle
         ser.close()
 
@@ -58,7 +90,7 @@ def runCmds(cmds):
 
 @app.route("/")
 def home():
-    buttons = [("Lokale-Präsentation","/rs232/hdmi1",0),("Videokonferenz (Zoom)","/Displayport",0),("Mute","/Mic Mute","btn-danger")]
+    buttons = [("Lokale-Präsentation","/rs232/hdmi1",0),("Interner PC","/rs232/dp1",0),("Videokonferenz (Zoom)","/pc/zoom",0),("Videokonferenz (Teams)","/pc/teams",0),("Mute","/Mic Mute","btn-danger")]
     return render_template("home.html",buttons=buttons)
 
 @app.route("/test")
@@ -67,15 +99,46 @@ def test():
     return render_template("test.html",names=gustaf)
 
 @app.route("/rs232/<command>")
+def app_r232(command):
+        print("hi app")
+        return r232(command)
+
+
 def r232(command):
+    print("hi test")
     cmds = []
     if command == "hdmi1":
-        cmds = ["hdmi1"]
+        cmds = ["poweron", "hdmi1"]
     elif command == "hdmi2":
-        cmds = ["hdmi2"]
-    
+        cmds = ["poweron", "hdmi2"]
+    elif command == "dp1":
+        cmds = ["poweron", "dp1"]
     if len(cmds) == 0:
         return ""
-    
+    print(cmds)
     runCmds(cmds)
     return "ok"
+
+@app.route("/pc/<command>")
+def app_pc(command):
+        print("pc app")
+        return cmd_pc(command)
+
+def cmd_pc(command):
+        global pc
+        print("pc cmd", pc)
+        global pcHasToDo
+        r232("dp1")
+        #Falls der PC noch nicht verbunden ist
+        if pc == False:
+                print("pc nicht da")
+                # Speichere Kommando
+                pcHasToDo = command
+                return "noch nicht ready"
+        # sende Befehl an PC
+        if command == "zoom":
+                socketio.emit("message","zoom")
+        elif command == "teams":
+                socketio.emit("message", "teams")
+        
+        return "ok"
