@@ -1,4 +1,4 @@
-const buttons=document.querySelectorAll(".btn")
+const buttons=document.querySelectorAll(".btn-click")
 buttons.forEach(function (button){
     button.addEventListener("click", async function(element){
         button.disabled = true
@@ -6,4 +6,23 @@ buttons.forEach(function (button){
         await fetch(url)
         button.disabled = false
     })
+})
+
+const holdbuttons = document.querySelectorAll(".btn-hold")
+holdbuttons.forEach(function (button){
+    const richtung = button.getAttribute("data-richtung")
+    button.addEventListener('contextmenu', event => event.preventDefault());
+
+    const sendeRichtung = (richtung) => {
+        fetch("/bewegung/" + richtung)
+    }
+
+    button.addEventListener("mousedown", () => sendeRichtung(richtung))
+    button.addEventListener("mouseup", () => sendeRichtung(0))
+    button.addEventListener("cancel", ()=> sendeRichtung(0))
+    button.addEventListener("mouseleave", ()=> sendeRichtung(0))
+
+    button.addEventListener("touchstart", () => sendeRichtung(richtung))
+    button.addEventListener("touchend", ()=> sendeRichtung(0))
+    button.addEventListener("touchcancel", ()=>  sendeRichtung(0))
 })

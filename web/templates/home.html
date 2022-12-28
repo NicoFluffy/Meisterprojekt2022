@@ -4,8 +4,10 @@
 <div class="grid">
 {% if buttons %}
   {% for name, func, color in buttons %}
-    <button class="btn {% if color %}{{color}}{%else%}btn-primary {%endif%}" data-url="{{func}}">{{name}}</button>
+      <button class="btn btn-click {% if color %}{{color}}{%else%}btn-primary {%endif%}" data-url="{{func}}">{{name}}</button>
   {% endfor %}
+  <button class="btn btn-primary btn-hold" data-richtung="2">hochfahren</button>
+  <button class="btn btn-primary btn-hold" data-richtung="1">runterfahren</button>
 {% else %}
   <h1>Hello, World!</h1>
 {% endif %}

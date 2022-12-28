@@ -1,0 +1,4 @@
+PIR_Sensor = 24
+UP = 23
+DOWN = 25
+LAUFZEIT = 5

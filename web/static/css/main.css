@@ -1,0 +1,21 @@
+.grid {
+    max-width: 800px;
+    margin:auto;
+    padding: 2rem 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem 0.5rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.btn {
+    hyphens: auto;
+}
+.btn-hold {
+    grid-row: 10;
+}

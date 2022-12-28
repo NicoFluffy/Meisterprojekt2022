@@ -2,18 +2,28 @@ from flask import Flask, render_template
 import time
 import serial
 from flask_socketio import SocketIO
+import atexit
+from threading import Timer
+import RPi.GPIO as GPIO
+
+import bewegung
+import pins
 
 # Erstelle Flask APP mit SocketIO
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'superSecret!'
 socketio = SocketIO(app)
+
+
 # Ist PC verbunden?
 pc = False
 # Befehl den der PC noch zu starten hat
 pcHasToDo = None
 
-if __name__ == '__main__':
-    socketio.run(app)
+
+#timer für Bewegungssensor
+timer = 0
+Cooldown = 10
 
 
 @socketio.on('connect')
@@ -113,16 +123,25 @@ def r232(command):
         cmds = ["poweron", "hdmi2"]
     elif command == "dp1":
         cmds = ["poweron", "dp1"]
+    elif command == "poweroff":
+        cmds = ["poweroff"]
     if len(cmds) == 0:
         return ""
     print(cmds)
     runCmds(cmds)
     return "ok"
 
+
+@app.route("/bewegung/<command>")
+def bewege(command):
+        bewegung.bewegung(int(command))
+        return "ok"
+
 @app.route("/pc/<command>")
 def app_pc(command):
         print("pc app")
         return cmd_pc(command)
+
 
 def cmd_pc(command):
         global pc
@@ -142,3 +161,46 @@ def cmd_pc(command):
                 socketio.emit("message", "teams")
         
         return "ok"
+
+
+#Einfahren
+def einfahren():
+    r232("poweroff")
+    bewegung.bewegung(1)
+    time.sleep(30)
+    bewegung.bewegung(0)
+    global Cooldown
+    Cooldown = time.time()
+    global timer
+    timer = 0
+
+    #Ausfahren
+def rausfahren(PIR_Sensor):
+    global Cooldown
+    now = time.time()
+    if now < Cooldown+60*2:
+        print("still Cooldown")
+        return
+
+    global timer
+    print("UP")
+    if timer == 0:
+        r232("dp1")
+        bewegung.bewegung(2)
+    else:
+        timer.cancel()
+    timer = Timer(30.0,einfahren)
+    timer.start()
+
+#starte Bewegungsensor
+#GPIO.add_event_detect(pins.PIR_Sensor, GPIO.RISING, callback=rausfahren)
+
+def OnExitApp():
+        print("shutting down gpio")
+        bewegung.shutdown()
+
+atexit.register(OnExitApp)
+
+
+if __name__ == '__main__':
+    socketio.run(app)
