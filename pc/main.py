@@ -33,6 +33,11 @@ def message(data):
         else:
             subprocess.call([r'C:\Users\nicow\AppData\Local\Microsoft\Teams\current\Teams.exe'])
 
-if __name__ == '__main__':
-    sio.connect('http://192.168.0.180:5000', namespaces=["/win"])
+def main():
+    try: 
+        sio.connect('http://192.168.0.180:5000', namespaces=["/win"])
+    except KeyboardInterrupt:
+        sio.disconnect()
 
+if __name__ == '__main__':
+    main()
