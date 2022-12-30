@@ -42,6 +42,8 @@ def main():
         except KeyboardInterrupt:
             sio.disconnect()
             break
+        finally:
+            print("keine Verbindung")
 
 if __name__ == '__main__':
     main()
