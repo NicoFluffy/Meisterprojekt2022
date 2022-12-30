@@ -37,7 +37,7 @@ def main():
     while True:
         try: 
             time.sleep(1)
-            sio.connect('http://192.168.0.180:5000', namespaces=["/win"])
+            sio.connect('http://192.168.1.180:5000', namespaces=["/win"])
             sio.wait()
         except KeyboardInterrupt:
             sio.disconnect()
