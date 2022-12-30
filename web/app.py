@@ -273,7 +273,7 @@ def OnExitApp():
 
 atexit.register(OnExitApp)
 
-dsp.sendCMD("vol10")
+dsp.sendCMD("vol5")
 
 
 if __name__ == '__main__':
