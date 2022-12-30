@@ -6,20 +6,20 @@ import platform
 # asyncio
 sio = socketio.Client()
 
-@sio.event
+@sio.event(namespace='/win')
 def connect():
     print("I'm connected!")
 
-@sio.event
+@sio.event(namespace='/win')
 def connect_error(data):
     print("The connection failed!")
 
-@sio.event
+@sio.event(namespace='/win')
 def disconnect():
     print("I'm disconnected!")
 
 
-@sio.event
+@sio.event(namespace='/win')
 def message(data):
     print('I received a message!', data)
     if data == "zoom":
