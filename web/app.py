@@ -20,13 +20,14 @@ pc = False
 # Befehl den der PC noch zu starten hat
 pcHasToDo = None
 
+namespace_win = "/win"
 
 #timer für Bewegungssensor
 timer = 0
 Cooldown = 10
 
 
-@socketio.on('connect')
+@socketio.on('connect', namespace=namespace_win)
 def test_connect():
     print('pc da')
     global pc 
@@ -39,7 +40,7 @@ def test_connect():
         pcHasToDo = None
 
 
-@socketio.on('disconnect')
+@socketio.on('disconnect', namespace=namespace_win)
 def test_disconnect():
     print('pc weg')
     global pc
@@ -156,9 +157,9 @@ def cmd_pc(command):
                 return "noch nicht ready"
         # sende Befehl an PC
         if command == "zoom":
-                socketio.emit("message","zoom")
+                socketio.emit("message","zoom", to=namespace_win)
         elif command == "teams":
-                socketio.emit("message", "teams")
+                socketio.emit("message", "teams",to=namespace_win)
         
         return "ok"
 
