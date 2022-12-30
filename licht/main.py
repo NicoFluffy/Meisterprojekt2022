@@ -84,17 +84,8 @@ def lichtMute():
             pixels[i + mute_offset] = (255,0,0)
 
 def main():
-    while True:
-        try: 
             time.sleep(1)
-            sio.connect('http://192.168.0.180:5000', namespaces=[namespace])
-            sio.wait()
-        except KeyboardInterrupt:
-            sio.disconnect()
-            break
-        except:
-            print("keine Verbindung")
-
+            sio.connect('http://192.168.1.180:5000', namespaces=[namespace])
 
 if __name__ == '__main__':
     main()

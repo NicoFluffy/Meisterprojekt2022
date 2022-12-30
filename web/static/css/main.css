@@ -19,3 +19,8 @@
 .btn-hold {
     grid-row: 10;
 }
+
+.test {
+    grid-column: 1 / -1;
+    padding-bottom: 1rem;
+}

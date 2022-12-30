@@ -26,3 +26,8 @@ holdbuttons.forEach(function (button){
     button.addEventListener("touchend", ()=> sendeRichtung(0))
     button.addEventListener("touchcancel", ()=>  sendeRichtung(0))
 })
+
+
+document.querySelector("#vol").addEventListener("change", (e)=> {
+    fetch("/vol/" + e.target.value)
+})

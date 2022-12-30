@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 
 import bewegung
 import pins
+import dsp
 
 # Erstelle Flask APP mit SocketIO
 app = Flask(__name__)
@@ -36,7 +37,7 @@ Cooldown = 10
 
 #windows rechner
 @socketio.on('connect', namespace=namespace_win)
-def test_connect():
+def test_connect(a):
     print('pc da')
     global pc 
     global pcHasToDo
@@ -56,11 +57,15 @@ def test_disconnect():
     pc = False
 
 @socketio.on('connect', namespace=namespace_licht)
-def connect_licht():
+def connect_licht(a):
     global muted
     if muted: 
+        dsp.sendCMD("mutem1")
+        dsp.sendCMD("mutem2")
         socketio.emit("message", "mute" , namespace=namespace_licht)
     else:
+        dsp.sendCMD("unmutem1")
+        dsp.sendCMD("unmutem2")
         socketio.emit("message", "unmute" , namespace=namespace_licht)
     print('licht da')
 
@@ -121,7 +126,6 @@ def runCmds(cmds):
 
 
 
-
 @app.route("/")
 def home():
     buttons = [("Lokale-Präsentation","/rs232/hdmi1",0),("Interner PC","/rs232/dp1",0),("Videokonferenz (Zoom)","/pc/zoom",0),("Videokonferenz (Teams)","/pc/teams",0),("Mute","/mic/mute","btn-danger"),("Unmute","/mic/unmute","btn-success")]
@@ -138,6 +142,7 @@ def r232(command):
     print("hi test")
     global licht
     licht = False
+    dsp.sendCMD("film")
     cmds = []
     if command == "hdmi1":
         cmds = ["poweron", "hdmi1"]
@@ -153,7 +158,11 @@ def r232(command):
     runCmds(cmds)
     return "ok"
 
-
+@app.route("/vol/<command>")
+def volume(command):
+    dsp.sendCMD("vol"+command)
+    return "ok"
+    
 @app.route("/bewegung/<command>")
 def bewege(command):
         bewegung.bewegung(int(command))
@@ -168,9 +177,13 @@ def app_pc(command):
 def mutemic(command):
     global muted
     if command == "mute":
+        dsp.sendCMD("mutem1")
+        dsp.sendCMD("mutem2")
         muted = True
         socketio.emit("message","mute", namespace=namespace_licht)
     elif command == "unmute":
+        dsp.sendCMD("unmutem1")
+        dsp.sendCMD("unmutem2")
         muted = False
         socketio.emit("message","unmute", namespace=namespace_licht)
     return ""
@@ -190,9 +203,11 @@ def cmd_pc(command):
         if command == "zoom":
                 licht = True
                 socketio.emit("message","zoom", namespace=namespace_win)
+                dsp.sendCMD("sprache")
         elif command == "teams":
                 licht = True
                 socketio.emit("message", "teams",namespace=namespace_win)
+                dsp.sendCMD("sprache")
         
         return "ok"
 
@@ -223,7 +238,7 @@ def rausfahren(PIR_Sensor):
         bewegung.bewegung(2)
     else:
         timer.cancel()
-    timer = Timer(30.0,einfahren)
+    timer = Timer( 15 * 60.0,einfahren)
     timer.start()
 
 def lichtschalter(channel):
@@ -257,6 +272,8 @@ def OnExitApp():
         bewegung.shutdown()
 
 atexit.register(OnExitApp)
+
+dsp.sendCMD("vol10")
 
 
 if __name__ == '__main__':

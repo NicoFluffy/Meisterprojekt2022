@@ -2,14 +2,21 @@
 {% block title %}Mediensteuerung{% endblock %}
 {% block content %}
 <div class="grid">
+  <div class="test">
+    <label for="vol" class="form-label">Lautstärke</label>
+    <input type="range" class="form-range" id="vol" min="0" max="10" step="1" >
+  </div>
 {% if buttons %}
   {% for name, func, color in buttons %}
       <button class="btn btn-click {% if color %}{{color}}{%else%}btn-primary {%endif%}" data-url="{{func}}">{{name}}</button>
   {% endfor %}
   <button class="btn btn-primary btn-hold" data-richtung="2">hochfahren</button>
   <button class="btn btn-primary btn-hold" data-richtung="1">runterfahren</button>
+  
 {% else %}
   <h1>Hello, World!</h1>
 {% endif %}
 </div>
+
+
 {% endblock %}
