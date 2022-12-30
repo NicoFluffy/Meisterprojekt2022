@@ -15,18 +15,26 @@ app.config['SECRET_KEY'] = 'superSecret!'
 socketio = SocketIO(app)
 
 
+
 # Ist PC verbunden?
 pc = False
 # Befehl den der PC noch zu starten hat
 pcHasToDo = None
 
+#hat der aktuelle Modus Licht
+licht = False
+
+#muted
+muted = False
+
 namespace_win = "/win"
+namespace_licht = "/licht"
 
 #timer für Bewegungssensor
 timer = 0
 Cooldown = 10
 
-
+#windows rechner
 @socketio.on('connect', namespace=namespace_win)
 def test_connect():
     print('pc da')
@@ -40,11 +48,26 @@ def test_connect():
         pcHasToDo = None
 
 
+
 @socketio.on('disconnect', namespace=namespace_win)
 def test_disconnect():
     print('pc weg')
     global pc
     pc = False
+
+@socketio.on('connect', namespace=namespace_licht)
+def connect_licht():
+    global muted
+    if muted: 
+        socketio.emit("message", "mute" , namespace=namespace_licht)
+    else:
+        socketio.emit("message", "unmute" , namespace=namespace_licht)
+    print('licht da')
+
+
+@socketio.on('disconnect', namespace=namespace_licht)
+def disconnect_licht():
+    print('licht weg')
 
 commandsmondo = {
   "poweron": "5b00100001",
@@ -101,13 +124,9 @@ def runCmds(cmds):
 
 @app.route("/")
 def home():
-    buttons = [("Lokale-Präsentation","/rs232/hdmi1",0),("Interner PC","/rs232/dp1",0),("Videokonferenz (Zoom)","/pc/zoom",0),("Videokonferenz (Teams)","/pc/teams",0),("Mute","/Mic Mute","btn-danger")]
+    buttons = [("Lokale-Präsentation","/rs232/hdmi1",0),("Interner PC","/rs232/dp1",0),("Videokonferenz (Zoom)","/pc/zoom",0),("Videokonferenz (Teams)","/pc/teams",0),("Mute","/mic/mute","btn-danger"),("Unmute","/mic/unmute","btn-success")]
     return render_template("home.html",buttons=buttons)
 
-@app.route("/test")
-def test():
-    gustaf = ["nico", "marc", "Valerie"]
-    return render_template("test.html",names=gustaf)
 
 @app.route("/rs232/<command>")
 def app_r232(command):
@@ -117,6 +136,8 @@ def app_r232(command):
 
 def r232(command):
     print("hi test")
+    global licht
+    licht = False
     cmds = []
     if command == "hdmi1":
         cmds = ["poweron", "hdmi1"]
@@ -143,11 +164,21 @@ def app_pc(command):
         print("pc app")
         return cmd_pc(command)
 
+@app.route("/mic/<command>")
+def mutemic(command):
+    global muted
+    if command == "mute":
+        muted = True
+        socketio.emit("message","mute", namespace=namespace_licht)
+    elif command == "unmute":
+        muted = False
+        socketio.emit("message","unmute", namespace=namespace_licht)
+    return ""
 
 def cmd_pc(command):
         global pc
         print("pc cmd", pc)
-        global pcHasToDo
+        global pcHasToDo, licht
         r232("dp1")
         #Falls der PC noch nicht verbunden ist
         if pc == False:
@@ -157,8 +188,10 @@ def cmd_pc(command):
                 return "noch nicht ready"
         # sende Befehl an PC
         if command == "zoom":
+                licht = True
                 socketio.emit("message","zoom", namespace=namespace_win)
         elif command == "teams":
+                licht = True
                 socketio.emit("message", "teams",namespace=namespace_win)
         
         return "ok"
@@ -186,27 +219,31 @@ def rausfahren(PIR_Sensor):
     global timer
     print("UP")
     if timer == 0:
-        r232("dp1")
+        r232("hdmi1")
         bewegung.bewegung(2)
     else:
         timer.cancel()
     timer = Timer(30.0,einfahren)
     timer.start()
 
-def licht(channel):
+def lichtschalter(channel):
+    global licht
+
+    print("licht", licht)
     p = GPIO.input(pins.LICHT)
-    if p == False:
-    #hat licht
-        print("habe licht")
-    else: 
-    #hat kein licht
-        print("habe kein licht")
+    message = "aus"
+    if p and licht:
+        message = "an"
+    
+    print("sende licht", message)
+    socketio.emit("message",message, namespace=namespace_licht)
+
 
 
 def delayLicht():
     while True:
-        time.sleep(10)
-        licht(0)
+        time.sleep(5)
+        lichtschalter(0)
 # Erstelle Thread für die Licht Überprüfung
 lichtThread = threading.Thread(target=lambda: delayLicht())
 lichtThread.start()
@@ -221,8 +258,6 @@ def OnExitApp():
 
 atexit.register(OnExitApp)
 
-licht(pins.LICHT)
-licht(pins.LICHT)
 
 if __name__ == '__main__':
     socketio.run(app)

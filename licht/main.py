@@ -13,12 +13,13 @@ pixel_pin = board.D18
 
 # The number of
 #  NeoPixels
-num_pixels = 11
+num_pixels = 98
 
 muted = False
+licht = False
 
-num_mute = 2
-mute_offset = 1
+num_mute = 6
+mute_offset = 46
 
 
 
@@ -27,7 +28,7 @@ mute_offset = 1
 ORDER = neopixel.GRB
 
 pixels = neopixel.NeoPixel(
-    pixel_pin, num_pixels, brightness=0.2, auto_write=False, pixel_order=ORDER
+    pixel_pin, num_pixels, brightness=1.0, auto_write=False, pixel_order=ORDER
 )
 
 # asyncio
@@ -48,19 +49,32 @@ def disconnect():
 
 @sio.event(namespace=namespace)
 def message(data):
+    global muted, licht
     print('I received a message!', data)
+    if data == "mute":
+        muted = True
+    elif data == "unmute":
+        muted = False
+    elif data == "an":
+        licht = True
+    elif data == "aus":
+        licht = False
+    
+    #schalte licht    
+    if licht:
+        lichtan()
+    else:
+        lichtaus()
+    lichtMute()
+    pixels.show()
 
 def lichtaus():
     print("licht aus")
     pixels.fill((0,0,0))
-    lichtMute()
-    pixels.show()
 
 def lichtan():
     print("licht an")
-    pixels.fill((255,255,255))
-    lichtMute()
-    pixels.show()
+    pixels.fill((255,180,160))
 
 def lichtMute():
     global muted
@@ -70,7 +84,6 @@ def lichtMute():
             pixels[i + mute_offset] = (255,0,0)
 
 def main():
-    lichtan()
     while True:
         try: 
             time.sleep(1)
