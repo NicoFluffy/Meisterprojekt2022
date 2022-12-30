@@ -1,7 +1,7 @@
 import socketio
 import subprocess
 import platform
-
+import time
 
 # asyncio
 sio = socketio.Client()
@@ -34,11 +34,14 @@ def message(data):
             subprocess.call([r'C:\Users\nicow\AppData\Local\Microsoft\Teams\current\Teams.exe'])
 
 def main():
-    sio.connect('http://192.168.0.180:5000', namespaces=["/win"])
-    try: 
-        sio.wait()
-    except KeyboardInterrupt:
-        sio.disconnect()
+    while True:
+        try: 
+            time.sleep(1)
+            sio.connect('http://192.168.0.180:5000', namespaces=["/win"])
+            sio.wait()
+        except KeyboardInterrupt:
+            sio.disconnect()
+            break
 
 if __name__ == '__main__':
     main()
