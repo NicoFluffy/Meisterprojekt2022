@@ -157,9 +157,9 @@ def cmd_pc(command):
                 return "noch nicht ready"
         # sende Befehl an PC
         if command == "zoom":
-                socketio.emit("message","zoom", to=namespace_win)
+                socketio.emit("message","zoom", namespace=namespace_win)
         elif command == "teams":
-                socketio.emit("message", "teams",to=namespace_win)
+                socketio.emit("message", "teams",namespace=namespace_win)
         
         return "ok"
 
