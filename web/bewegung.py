@@ -32,7 +32,6 @@ print("Das Programm wurde gestartet.")
 # 1 = runter
 # 2 = hoch
 def bewegung(richtung = 0):
-    return
     mutex.acquire()
     
        
