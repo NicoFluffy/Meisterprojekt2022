@@ -42,6 +42,8 @@ def main():
         except KeyboardInterrupt:
             sio.disconnect()
             break
+        except:
+            print("doof")
         finally:
             print("keine Verbindung")
 
