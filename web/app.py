@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-import time
+import time, threading
 import serial
 from flask_socketio import SocketIO
 import atexit
@@ -192,8 +192,27 @@ def rausfahren(PIR_Sensor):
     timer = Timer(30.0,einfahren)
     timer.start()
 
+def licht(channel):
+    p = GPIO.input(pins.LICHT)
+    if p == False:
+    #hat licht
+        print("habe licht")
+    else: 
+    #hat kein licht
+        print("habe kein licht")
+
+
+def delayLicht():
+    while True:
+        time.sleep(10)
+        licht(0)
+# Erstelle Thread für die Licht Überprüfung
+lichtThread = threading.Thread(target=lambda: delayLicht())
+lichtThread.start()
+
 #starte Bewegungsensor
 #GPIO.add_event_detect(pins.PIR_Sensor, GPIO.RISING, callback=rausfahren)
+
 
 def OnExitApp():
         print("shutting down gpio")
@@ -201,6 +220,8 @@ def OnExitApp():
 
 atexit.register(OnExitApp)
 
+licht(pins.LICHT)
+licht(pins.LICHT)
 
 if __name__ == '__main__':
     socketio.run(app)

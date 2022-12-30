@@ -21,6 +21,9 @@ GPIO.setup(pins.DOWN, GPIO.OUT)
 GPIO.output(pins.UP, True)
 GPIO.output(pins.DOWN, True)
 
+#Setup Lichtsensor
+GPIO.setup(pins.LICHT, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
 print("Das Programm wurde gestartet.")
 
 
