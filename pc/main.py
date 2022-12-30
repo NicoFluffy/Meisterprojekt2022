@@ -43,8 +43,6 @@ def main():
             sio.disconnect()
             break
         except:
-            print("doof")
-        finally:
             print("keine Verbindung")
 
 if __name__ == '__main__':
