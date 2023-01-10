@@ -125,10 +125,10 @@ def runCmds(cmds):
         ser.close()
 
 
-
+#Btn Config
 @app.route("/")
 def home():
-    buttons = [("Lokale-Präsentation","/rs232/hdmi1",0),("Interner PC","/rs232/dp1",0),("Videokonferenz (Zoom)","/pc/zoom",0),("Videokonferenz (Teams)","/pc/teams",0),("Mute","/mic/mute","btn-danger"),("Unmute","/mic/unmute","btn-success")]
+    buttons = [("Lokale-Präsentation","/rs232/hdmi1",0),("Interner PC","/rs232/dp1",0),("Videokonferenz (Zoom)","/pc/zoom",0),("Videokonferenz (Teams)","/pc/teams",0),("Whiteboard","/pc/whiteboard",0),("Aufzeichnung","/pc/aufzeichnen",0),("Mute","/mic/mute","btn-danger"),("Unmute","/mic/unmute","btn-success")]
     return render_template("home.html",buttons=buttons)
 
 
@@ -243,7 +243,7 @@ def rausfahren(PIR_Sensor):
 
 def lichtschalter(channel):
     global licht
-
+#P = True = Dunkel
     print("licht", licht)
     p = GPIO.input(pins.LICHT)
     message = "aus"
@@ -254,7 +254,7 @@ def lichtschalter(channel):
     socketio.emit("message",message, namespace=namespace_licht)
 
 
-
+# Hellichkeitssensor
 def delayLicht():
     while True:
         time.sleep(5)
